@@ -1,0 +1,23 @@
+version: '3.1'
+
+services:
+  dbtest:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    volumes:
+      - ./pg_test:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: store_app
+      POSTGRES_USER: angel
+      POSTGRES_PASSWORD: 12345
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"

@@ -1,0 +1,6 @@
+node_modules
+.production.env
+pg_data
+pg_test
+coverage
+dist
