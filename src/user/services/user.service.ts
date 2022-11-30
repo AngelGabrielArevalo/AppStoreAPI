@@ -1,10 +1,12 @@
 import { BaseService } from '../../common/services/base.service';
 import { User } from '../entities/user.entity';
 import { Repository, UpdateResult, DeleteResult } from 'typeorm';
-import { UserDto } from '../dtos/user.dto';
+import { CreateUserDto } from '../dtos/create-user.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
 import boom from '@hapi/boom';
 import { httpCrudUserMessages } from '../utils/responses';
-import { handleDBEcpection } from '../utils/functions';
+import { handleDBEcpection } from '../../common/utils/functions';
+import bcrypt from 'bcrypt';
 
 export class UserService extends BaseService<User> {
 	private userRepository: Repository<User>;
@@ -42,27 +44,31 @@ export class UserService extends BaseService<User> {
 		return user;
 	}
 
-	async create(userDto: UserDto): Promise<User | undefined> {
+	async create(createUserDto: CreateUserDto): Promise<User | undefined> {
 		try {
-			const newUser = this.userRepository.create(userDto);
+			const hash: string = await bcrypt.hash(createUserDto.password, 10);
+			createUserDto.password = hash;
+
+			const newUser: User = this.userRepository.create(createUserDto);
 
 			const user: User = await this.userRepository.save(newUser);
 
+			delete user.password;
 			return user;
 		} catch (error: any) {
 			handleDBEcpection(error);
 		}
 	}
 
-	async update(id: string, userDto: UserDto): Promise<User | null> {
-		userDto.updatedAt = new Date();
-		const result: UpdateResult = await this.userRepository.update(id, userDto);
+	async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
+		updateUserDto.updatedAt = new Date();
+		const result: UpdateResult = await this.userRepository.update(id, updateUserDto);
 
 		if (result.affected === 0) {
 			throw boom.badRequest(httpCrudUserMessages.errorAlActualizar);
 		}
 
-		return this.findById(id);
+		return await this.findById(id);
 	}
 
 	async delete(id: string): Promise<DeleteResult | null> {

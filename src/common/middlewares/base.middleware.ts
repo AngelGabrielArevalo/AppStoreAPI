@@ -12,7 +12,6 @@ export class BaseMiddleware {
 	validarDto(nameSchema: SchemaDto, dto: Constructor, location: LocationRequest) {
 		return (req: Request, res: Response, next: NextFunction) => {
 			const dtoRequest = req[location];
-			console.log(dto);
 			const schemaCreate = getClassSchema(dto, { group: nameSchema });
 			const { error } = schemaCreate.validate(dtoRequest, { abortEarly: false });
 

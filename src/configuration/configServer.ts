@@ -1,19 +1,14 @@
 import dotenv from 'dotenv';
-import { getConfig } from './database/data.source';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import { AppDataSource } from './database/data.source';
 
 export class ConfigServer {
     private nodeEnv: string | undefined;
-    AppDataSource: DataSource;
-    config: DataSourceOptions;
 
     constructor() {
         this.nodeEnv = this.getEnvironment('NODE_ENV');
         dotenv.config({
             path: this.createdPathEnvironment(this.nodeEnv)
         });
-        this.config = getConfig();
-        this.AppDataSource = new DataSource(this.config);
     }
 
     protected getEnvironment(keyEnv: string): string | undefined {
@@ -31,7 +26,20 @@ export class ConfigServer {
         return '.env';
     }
 
-    public async initDataBaseConecction(): Promise<DataSource>{
-        return await this.AppDataSource.initialize();
+    public async initDataBaseConecction(): Promise<void>{
+         await AppDataSource.initialize();
+    }
+
+    async dropDBAndDisconect(): Promise<void> {
+        await AppDataSource.createQueryRunner().clearDatabase();
+        await AppDataSource.destroy();
+    }
+
+    async executeQuery(query: string): Promise<void> {
+        await AppDataSource.query(query);
+    }
+
+    async synchronizeDB() : Promise<void> {
+        await AppDataSource.synchronize();
     }
 }

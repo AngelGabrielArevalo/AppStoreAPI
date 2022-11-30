@@ -1,16 +1,16 @@
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import { NextFunction, Request, Response } from 'express';
-import { UserDto } from '../../../src/user/dtos/user.dto';
 import { LocationRequest, Rol, SchemaDto } from '../../../src/common/types/types';
 import { BaseMiddleware } from '../../../src/common/middlewares/base.middleware';
 import boom from '@hapi/boom';
 import { httpResponseMessages } from '../../../src/common/utils/responses';
+import { CreateUserDto } from '../../../src/user/dtos/create-user.dto';
 
 describe('Tests BaseMiddlewares', () => {
 	const baseMiddleware: BaseMiddleware = new BaseMiddleware();
 
 	test('validarDto_conParametrosValidos_llamaANext', () => {
-		const createUserDto: UserDto = {
+		const createUserDto: CreateUserDto = {
 			name: 'Pedro',
 			lastName: 'Fernandez',
 			userName: 'pedrito',
@@ -26,7 +26,7 @@ describe('Tests BaseMiddlewares', () => {
 
 		const midlleware = baseMiddleware.validarDto(
 			SchemaDto.CREATE,
-			UserDto,
+			CreateUserDto,
 			LocationRequest.BODY
 		);
 		midlleware(req, res, next);
@@ -35,7 +35,7 @@ describe('Tests BaseMiddlewares', () => {
 	});
 
 	test('validarDto_conParametrosInvalidos_respondeJSONConErroresYStatus400', () => {
-		const createUserDto: UserDto = {
+		const createUserDto = {
 			name: 'Pedro',
 			lastName: 'Fernandez',
 			userName: 'pedrito',
@@ -58,7 +58,7 @@ describe('Tests BaseMiddlewares', () => {
 
 		const middlwware = baseMiddleware.validarDto(
 			SchemaDto.CREATE,
-			UserDto,
+			CreateUserDto,
 			LocationRequest.BODY
 		);
 		middlwware(req, res, next);

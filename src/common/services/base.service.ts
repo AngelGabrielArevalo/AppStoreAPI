@@ -1,14 +1,12 @@
 import { ConfigServer } from '../../configuration/configServer';
 import { BaseEntity } from '../entities/base.entity';
 import { EntityTarget, Repository } from 'typeorm';
+import { AppDataSource } from '../../configuration/database/data.source';
 
-export abstract class BaseService<T extends BaseEntity> extends ConfigServer {
-	constructor(private getEntity: EntityTarget<T>) {
-        super();
-        
-    };
+export abstract class BaseService<T extends BaseEntity> {
+	constructor(private getEntity: EntityTarget<T>) {}
 
-    protected getRepository(): Repository<T> {
-        return this.AppDataSource.getRepository(this.getEntity);
-    }
+	protected getRepository(): Repository<T> {
+		return AppDataSource.getRepository(this.getEntity);
+	}
 }

@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import express, { Application, Router } from "express";
-import { ConfigServer } from './configuration/configServer';
-import { UserRouter } from './user/user.router';
+import { ConfigServer } from '../configuration/configServer';
+import { UserRouter } from '../user/user.router';
 import morgan from "morgan";
 import cors from 'cors';
-import {insert} from '../tests/configuration/TestHelper'
+import { HandleErrorMiddleware } from '../common/middlewares/handleErrors.middleware';
 
 export class ServerBoostrap extends ConfigServer{
     public app: Application;
@@ -19,10 +19,9 @@ export class ServerBoostrap extends ConfigServer{
         this.app.use(morgan("dev"));
         this.app.use(cors());
 
-        this.dbConnect();
-
         this.app.use("/api/v1", this.routers());
-        this.listen();
+
+        this.app.use(HandleErrorMiddleware.handleErrors);
     }
 
     routers(): Array<Router> {
@@ -34,7 +33,6 @@ export class ServerBoostrap extends ConfigServer{
     async dbConnect(): Promise<void> {
         try {
             await this.initDataBaseConecction();
-            console.log(this.AppDataSource.options)
             console.log("Conectado a la base de datos");
         } catch (error) {
             console.log(error);
@@ -48,5 +46,3 @@ export class ServerBoostrap extends ConfigServer{
         });
     }
 }
-
-new ServerBoostrap();

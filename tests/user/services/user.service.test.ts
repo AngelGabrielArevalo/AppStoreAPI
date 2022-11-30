@@ -1,30 +1,33 @@
 import { User } from '../../../src/user/entities/user.entity';
-import { destroyDB, insert } from '../../configuration/TestHelper';
 import { UserService } from '../../../src/user/services/user.service';
-import { UserDto } from '../../../src/user/dtos/user.dto';
 import { Rol } from '../../../src/common/types/types';
 import { DeleteResult } from 'typeorm';
 import boom from '@hapi/boom';
 import { httpCrudUserMessages } from '../../../src/user/utils/responses';
+import { getQuery } from '../../configuration/getQuery';
+import { CreateUserDto } from '../../../src/user/dtos/create-user.dto';
+import { UpdateUserDto } from '../../../src/user/dtos/update-user.dto';
+import { ConfigServer } from '../../../src/configuration/configServer';
 
 describe('Test UserService', () => {
 	const userService = new UserService();
+	const configServer = new ConfigServer();
 
 	beforeEach(async () => {
-		await userService.initDataBaseConecction();
-		await userService.AppDataSource.synchronize();
-		await insert(userService.AppDataSource);
+		await configServer.initDataBaseConecction();
+		await configServer.synchronizeDB();
+		await configServer.executeQuery(await getQuery());
 	});
 
 	afterEach(async () => {
-		await destroyDB(userService.AppDataSource);
+		await configServer.dropDBAndDisconect();
 	});
 
 	test('findAll_conUsersExistentes_retornaArrayDeUsers', async () => {
 		const users: User[] = await userService.findAll();
 
 		expect(users).not.toBeNull();
-		expect(users.length).toBe(3);
+		expect(users.length).toBe(4);
 	});
 
 	test('findBy_conIdExistente_retornaUser', async () => {
@@ -44,7 +47,7 @@ describe('Test UserService', () => {
 	});
 
 	test('create_conParametrosValidos_guardaUser', async () => {
-		const userDto: UserDto = {
+		const createUserDto: CreateUserDto = {
 			name: 'Pedro',
 			lastName: 'Fernandez',
 			userName: 'pedrito',
@@ -55,14 +58,14 @@ describe('Test UserService', () => {
 			role: Rol.ADMIN,
 		};
 
-		const newUser: User | undefined = await userService.create(userDto);
+		const newUser: User | undefined = await userService.create(createUserDto);
 
 		expect(newUser instanceof User).toBeTruthy();
-		expect(newUser?.name).toBe(userDto.name);
+		expect(newUser?.name).toBe(createUserDto.name);
 	});
 
 	test('create_conParametrosInvalidos_lanzaExcepcion', async () => {
-		const userDto: UserDto = {
+		const createUserDto: CreateUserDto = {
 			name: 'Pedro',
 			lastName: 'Fernandez',
 			userName: 'pedrito',
@@ -73,7 +76,7 @@ describe('Test UserService', () => {
 			role: Rol.ADMIN,
 		};
 
-		await expect(userService.create(userDto)).rejects.toThrow(
+		await expect(userService.create(createUserDto)).rejects.toThrow(
 			boom.badRequest('Key (email)=(angel@gmail.com) already exists.')
 		);
 	});
@@ -81,12 +84,12 @@ describe('Test UserService', () => {
 	test('update_conIdExistenteYParametrosValidos_actualizaUser', async () => {
 		const id: string = '1c3e1c21-9bae-4049-8473-2e36578377be';
 		const fechaDeHoy: Date = new Date();
-		const changesUser: UserDto = {
+		const updateUserDto: UpdateUserDto = {
 			name: 'Felipe',
 			updatedAt: fechaDeHoy,
 		};
 
-		const user: User | null = await userService.update(id, changesUser);
+		const user: User | null = await userService.update(id, updateUserDto);
 
 		expect(user).not.toBeNull();
 		expect(user?.name).toBe('Felipe');
@@ -95,11 +98,11 @@ describe('Test UserService', () => {
 
 	test('update_conParametrosInvalidos_lanzaExcepcion', async () => {
 		const id: string = '8c3e1c21-9bae-4049-8473-2e36578377be';
-		const changesUser: UserDto = {
+		const updateUserDto: UpdateUserDto = {
 			name: 'Felipe',
 		};
 
-		await expect(userService.update(id, changesUser)).rejects.toThrow(
+		await expect(userService.update(id, updateUserDto)).rejects.toThrow(
 			boom.badRequest(httpCrudUserMessages.errorAlActualizar)
 		);
 	});

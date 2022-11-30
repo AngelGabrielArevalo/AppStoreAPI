@@ -2,8 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/user.service';
 import { User } from '../entities/user.entity';
 import { StatusCodes } from 'http-status-codes';
-import { UserDto } from '../dtos/user.dto';
+import { CreateUserDto } from '../dtos/create-user.dto';
 import { DeleteResult } from 'typeorm';
+import { UpdateUserDto } from '../dtos/update-user.dto';
 export class UserController {
 	constructor(private readonly userService: UserService = new UserService()) {}
 
@@ -26,8 +27,8 @@ export class UserController {
 
 	async create(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const userDto: UserDto = req.body;
-			const newUser = await this.userService.create(userDto);
+			const createUserDto: CreateUserDto = req.body;
+			const newUser: User | undefined = await this.userService.create(createUserDto);
 
 			res.status(StatusCodes.CREATED).json(newUser);
 		} catch (error: any) {
@@ -38,9 +39,9 @@ export class UserController {
 	async update(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			const { id } = req.params;
-			const userChanges: UserDto = req.body;
+			const updateUserDto: UpdateUserDto = req.body;
 
-			const userUpdate: User | null = await this.userService.update(id, userChanges);
+			const userUpdate: User | null = await this.userService.update(id, updateUserDto);
 
 			res.status(StatusCodes.OK).json(userUpdate);
 		} catch (error: any) {

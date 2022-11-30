@@ -5,8 +5,9 @@ import { UserService } from '../../../src/user/services/user.service';
 import { User } from '../../../src/user/entities/user.entity';
 import { Rol } from '../../../src/common/types/types';
 import { StatusCodes } from 'http-status-codes';
-import { UserDto } from '../../../src/user/dtos/user.dto';
 import { DeleteResult } from 'typeorm';
+import { CreateUserDto } from '../../../src/user/dtos/create-user.dto';
+import { UpdateUserDto } from '../../../src/user/dtos/update-user.dto';
 
 jest.mock('../../../src/user/services/user.service');
 
@@ -124,7 +125,7 @@ describe('Test UserController', () => {
 	});
 
 	test('create_conParametrosValidos_respondeJSONConNewUserYStatus201', async () => {
-		const userDto: UserDto = {
+		const createUserDto: CreateUserDto = {
 			name: 'Pedro',
 			lastName: 'Fernandez',
 			userName: 'pedrito',
@@ -147,7 +148,7 @@ describe('Test UserController', () => {
 			role: Rol.ADMIN,
 			recoveryToken: 'token',
 		};
-		const req: Request = getMockReq({ body: userDto });
+		const req: Request = getMockReq({ body: createUserDto });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
 		const mockService = jest
@@ -157,7 +158,7 @@ describe('Test UserController', () => {
 		await userController.create(req, res, next);
 
 		expect(mockService).toHaveBeenCalledTimes(1);
-		expect(mockService).toBeCalledWith(userDto);
+		expect(mockService).toBeCalledWith(createUserDto);
 		expect(res.status).toHaveBeenCalledTimes(1);
 		expect(res.status).toBeCalledWith(StatusCodes.CREATED);
 		expect(res.json).toHaveBeenCalledTimes(1);
@@ -165,7 +166,7 @@ describe('Test UserController', () => {
 	});
 
 	test('create_conParametrosInvalidos_llamaANext', async () => {
-		const newUserDto: UserDto = {
+		const createUserDto: CreateUserDto = {
 			name: 'Pedro',
 			lastName: 'Fernandez',
 			userName: 'pedrito',
@@ -175,7 +176,7 @@ describe('Test UserController', () => {
 			province: 'province',
 			role: Rol.ADMIN,
 		};
-		const req: Request = getMockReq({ body: newUserDto });
+		const req: Request = getMockReq({ body: createUserDto });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
 		const mockService = jest.spyOn(UserService.prototype, 'create').mockImplementation(() => {
@@ -185,13 +186,13 @@ describe('Test UserController', () => {
 		await userController.create(req, res, next);
 
 		expect(mockService).toHaveBeenCalledTimes(1);
-		expect(mockService).toBeCalledWith(newUserDto);
+		expect(mockService).toBeCalledWith(createUserDto);
 		expect(next).toHaveBeenCalledTimes(1);
 	});
 
 	test('update_conParametrosValidos_respondeJSONConUserUpdateYStatus200', async () => {
 		const id: string = '1c3e1c21-9bae-4049-8473-2e36578377be';
-		const userChanges: UserDto = {
+		const updateUserDto: UpdateUserDto = {
 			name: 'Laura',
 			lastName: 'Fernandez',
 		};
@@ -208,7 +209,7 @@ describe('Test UserController', () => {
 			role: Rol.ADMIN,
 			recoveryToken: 'token',
 		};
-		const req: Request = getMockReq({ body: userChanges, params: { id } });
+		const req: Request = getMockReq({ body: updateUserDto, params: { id } });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
 		const mockService = jest
@@ -218,7 +219,7 @@ describe('Test UserController', () => {
 		await userController.update(req, res, next);
 
 		expect(mockService).toHaveBeenCalledTimes(1);
-		expect(mockService).toBeCalledWith(id, userChanges);
+		expect(mockService).toBeCalledWith(id, updateUserDto);
 		expect(res.status).toHaveBeenCalledTimes(1);
 		expect(res.status).toBeCalledWith(StatusCodes.OK);
 		expect(res.json).toHaveBeenCalledTimes(1);
@@ -227,11 +228,11 @@ describe('Test UserController', () => {
 
 	test('update_conParametrosInvalidos_llamaANext', async () => {
 		const id: string = '1c3e1c21-9bae-4049-8473-2e36578377be';
-		const userChanges: UserDto = {
+		const updateUserDto: UpdateUserDto = {
 			name: 'Laura',
 			lastName: 'Fernandez',
 		};
-		const req: Request = getMockReq({ body: userChanges, params: { id } });
+		const req: Request = getMockReq({ body: updateUserDto, params: { id } });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
 		const mockService = jest.spyOn(UserService.prototype, 'update').mockImplementation(() => {
@@ -241,7 +242,7 @@ describe('Test UserController', () => {
 		await userController.update(req, res, next);
 
 		expect(mockService).toHaveBeenCalledTimes(1);
-		expect(mockService).toBeCalledWith(id, userChanges);
+		expect(mockService).toBeCalledWith(id, updateUserDto);
 		expect(next).toHaveBeenCalledTimes(1);
 	});
 
