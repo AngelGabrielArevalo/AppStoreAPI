@@ -5,6 +5,7 @@ import { UserRouter } from '../user/user.router';
 import morgan from "morgan";
 import cors from 'cors';
 import { HandleErrorMiddleware } from '../common/middlewares/handleErrors.middleware';
+import { CustomerRouter } from '../customer/customer.router';
 
 export class ServerBoostrap extends ConfigServer{
     public app: Application;
@@ -26,7 +27,8 @@ export class ServerBoostrap extends ConfigServer{
 
     routers(): Array<Router> {
         return [
-            new UserRouter().router
+            new UserRouter().router,
+            new CustomerRouter().router
         ];
     }
 

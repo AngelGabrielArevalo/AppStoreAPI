@@ -3,6 +3,9 @@ import request from 'supertest';
 import { UserController } from '../../src/user/controllers/user.controller';
 import { ServerBoostrap } from '../../src/server/server';
 import { UserMiddleware } from '../../src/user/middlewares/user.middleware';
+import { LocationRequest, SchemaDto } from '../../src/common/types/types';
+import { Constructor } from 'joi-class-decorators/internal/defs';
+import { BaseMiddleware } from '../../src/common/middlewares/base.middleware';
 
 jest.mock('../../src/user/controllers/user.controller');
 jest.mock('morgan', () => {
@@ -19,22 +22,18 @@ jest.mock('cors', () => {
 		};
 	};
 });
-
+jest.spyOn(UserMiddleware.prototype, 'validateUUID').mockImplementation(
+	(req: Request, res: Response, next: NextFunction) => {
+		next();
+	}
+);
+jest.spyOn(UserMiddleware.prototype, 'validarDto').mockReturnValue(
+	(req: Request, res: Response, next: NextFunction) => {
+		next();
+	}
+);
 describe('Test UserRouter', () => {
 	const server = new ServerBoostrap();
-
-	beforeEach(() => {
-		jest.spyOn(UserMiddleware.prototype, 'validateUUID').mockImplementation(
-			(req: Request, res: Response, next: NextFunction) => {
-				next();
-			}
-		);
-		jest.spyOn(UserMiddleware.prototype, 'validarDto').mockReturnValue(
-			(req: Request, res: Response, next: NextFunction) => {
-				next();
-			}
-		);
-	});
 
 	test('GET:/users_llamaAuserController.findAll', async () => {
 		const mockController = jest

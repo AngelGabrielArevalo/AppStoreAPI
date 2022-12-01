@@ -1,23 +1,22 @@
-import { Response, NextFunction, Request } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { BaseRouter } from '../common/router/base.touter';
 import { LocationRequest, SchemaDto } from '../common/types/types';
-import { UserController } from './controllers/user.controller';
-import { UserMiddleware } from './middlewares/user.middleware';
-import { UpdateUserDto } from './dtos/update-user.dto';
-import { CreateCustomerDto } from '../customer/dtos/create-customer.dto';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CustomerController } from './controllers/customer.controller';
+import { CustomerMiddleware } from './middlewares/customer.middlewares';
+import { CreateCustomerDto } from './dtos/create-customer.dto';
+import { UpdateCustomerDto } from './dtos/update-customer.dto';
 
-export class UserRouter extends BaseRouter<UserController, UserMiddleware> {
+export class CustomerRouter extends BaseRouter<CustomerController, CustomerMiddleware> {
 	constructor() {
-		super(UserController, UserMiddleware);
+		super(CustomerController, CustomerMiddleware);
 	}
 
 	routes(): void {
-		this.router.get('/users', (req: Request, res: Response, next: NextFunction) =>
+		this.router.get('/customers', (req: Request, res: Response, next: NextFunction) =>
 			this.controller.findAll(req, res, next)
 		);
 		this.router.get(
-			'/users/:id',
+			'/customers/:id',
 			[
 				(req: Request, res: Response, next: NextFunction) =>
 					this.middleware.validateUUID(req, res, next),
@@ -26,24 +25,27 @@ export class UserRouter extends BaseRouter<UserController, UserMiddleware> {
 				this.controller.findById(req, res, next)
 		);
 		this.router.post(
-			'/users',
-			[this.middleware.validarDto(SchemaDto.CREATE, CreateUserDto, LocationRequest.BODY)],
+			'/customers',
+			[this.middleware.validarDto(SchemaDto.CREATE, CreateCustomerDto, LocationRequest.BODY)],
 			(req: Request, res: Response, next: NextFunction) =>
 				this.controller.create(req, res, next)
 		);
 		this.router.patch(
-			'/users/:id',
+			'/customers/:id',
 			[
 				(req: Request, res: Response, next: NextFunction) =>
 					this.middleware.validateUUID(req, res, next),
-				this.middleware.validarDto(SchemaDto.UPDATE, UpdateUserDto, LocationRequest.BODY),
+				this.middleware.validarDto(
+					SchemaDto.UPDATE,
+					UpdateCustomerDto,
+					LocationRequest.BODY
+				),
 			],
 			(req: Request, res: Response, next: NextFunction) =>
 				this.controller.update(req, res, next)
 		);
-		
 		this.router.delete(
-			'/users/:id',
+			'/customers/:id',
 			[
 				(req: Request, res: Response, next: NextFunction) =>
 					this.middleware.validateUUID(req, res, next),

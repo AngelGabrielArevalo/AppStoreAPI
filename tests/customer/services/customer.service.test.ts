@@ -2,10 +2,12 @@ import { CustomerService } from '../../../src/customer/services/customer.service
 import { ConfigServer } from '../../../src/configuration/configServer';
 import { getQuery } from '../../configuration/getQuery';
 import { Customer } from '../../../src/customer/entities/customer.entity';
-import { AppDataSource } from '../../../src/configuration/database/data.source';
 import { httpCrudCustomerMessages } from '../../../src/customer/utils/responses';
 import { CreateCustomerDto } from '../../../src/customer/dtos/create-customer.dto';
 import { User } from '../../../src/user/entities/user.entity';
+import { UpdateCustomerDto } from '../../../src/customer/dtos/update-customer.dto';
+import boom from '@hapi/boom';
+import { DeleteResult } from 'typeorm';
 
 describe('Test CustomerService', () => {
 	const customerService = new CustomerService();
@@ -30,7 +32,7 @@ describe('Test CustomerService', () => {
 
 	test('findByID_conIdExistente_retornaCustomer', async () => {
 		const id = '2c3e1c21-9bae-4049-8473-2e36578377be';
-		const customer: Customer | null = await customerService.findById(id);
+		const customer: Customer | undefined = await customerService.findById(id);
 
 		expect(customer).not.toBeNull();
 		expect(customer?.adress).toBe('AvenidaX123');
@@ -58,7 +60,7 @@ describe('Test CustomerService', () => {
 		expect(newCustomer?.adress).toBe(createCustomerDto.adress);
 	});
 
-	test('create_conParametrosInvalidos_lanzaExcepcion', async () => {
+	test('create_conIdDeUserInexistente_lanzaExcepcion', async () => {
 		const createCustomerDto: CreateCustomerDto = {
 			userId: '1c9e1c44-9bae-4049-8433-2e36578377be' as unknown as User,
 			adress: 'Roma 123',
@@ -70,4 +72,64 @@ describe('Test CustomerService', () => {
 			'Key (user_id)=(1c9e1c44-9bae-4049-8433-2e36578377be) is not present in table "users".'
 		);
 	});
+
+	test('create_conIdDeUserExistenteEnOtroCustomer_lanzaExcepcion', async () => {
+		const createCustomerDto: CreateCustomerDto = {
+			userId: '1c3e1c21-9bae-4049-8473-2e36578377be' as unknown as User,
+			adress: 'Roma 123',
+			dni: '43987654',
+			phone: '1512345432',
+		};
+
+		await expect(customerService.create(createCustomerDto)).rejects.toThrow(
+			'Key (user_id)=(1c3e1c21-9bae-4049-8473-2e36578377be) already exists.'
+		);
+	});
+
+	test('update_conIdExistente_actualizaCutomer', async () => {
+		const id: string = '2c3e1c21-9bae-4049-8473-2e36578377be';
+		const updateCustomerDto: UpdateCustomerDto = {
+			adress: 'Springfild 1234',
+		};
+		const fechaDeHoy: Date = new Date();
+
+		const customerUpdate: Customer | undefined = await customerService.update(
+			id,
+			updateCustomerDto
+		);
+
+		expect(customerUpdate).not.toBeNull();
+		expect(customerUpdate?.adress).toBe(updateCustomerDto.adress);
+		expect(customerUpdate?.updatedAt.setHours(0, 0, 0, 0)).toBe(
+			fechaDeHoy.setHours(0, 0, 0, 0)
+		);
+	});
+
+	test('update_conIdInexistente_lanzaExcepcion', async () => {
+		const id: string = '8c8e1c81-9bae-4049-8473-2e36578377be';
+		const updateCustomerDto: UpdateCustomerDto = {
+			adress: 'Springfild 1234',
+		};
+
+		await expect(customerService.update(id, updateCustomerDto)).rejects.toThrow(
+			boom.badRequest(httpCrudCustomerMessages.errorAlActualizar)
+		);
+	});
+
+	test('delete_conIdExistente_eliminaCustomer', async () => {
+		const id: string = '2c3e1c21-9bae-4049-8473-2e36578377be';
+
+		const resultDelete: DeleteResult | undefined = await customerService.delete(id);
+
+		expect(resultDelete!.affected).toBe(1);
+	});
+
+	test('delete_conIdInexistente_lanzaExcepcion', async () => {
+		const id: string = '9c9e9c21-9bae-4049-8473-2e36578377be';
+
+		await expect(customerService.delete(id)).rejects.toThrow(
+			boom.unauthorized(httpCrudCustomerMessages.errorAlEliminar)
+		);
+	});
 });
+

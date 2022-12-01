@@ -10,6 +10,7 @@ export class BaseMiddleware {
 	constructor() {}
 
 	validarDto(nameSchema: SchemaDto, dto: Constructor, location: LocationRequest) {
+		
 		return (req: Request, res: Response, next: NextFunction) => {
 			const dtoRequest = req[location];
 			const schemaCreate = getClassSchema(dto, { group: nameSchema });

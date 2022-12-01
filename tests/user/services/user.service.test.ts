@@ -2,7 +2,7 @@ import { User } from '../../../src/user/entities/user.entity';
 import { UserService } from '../../../src/user/services/user.service';
 import { Rol } from '../../../src/common/types/types';
 import { DeleteResult } from 'typeorm';
-import boom from '@hapi/boom';
+import boom, { Boom } from '@hapi/boom';
 import { httpCrudUserMessages } from '../../../src/user/utils/responses';
 import { getQuery } from '../../configuration/getQuery';
 import { CreateUserDto } from '../../../src/user/dtos/create-user.dto';
@@ -32,9 +32,10 @@ describe('Test UserService', () => {
 
 	test('findBy_conIdExistente_retornaUser', async () => {
 		const id: string = '1c3e1c21-9bae-4049-8473-2e36578377be';
-		const user: User | null = await userService.findById(id);
+		const user: User | undefined = await userService.findById(id);
 
 		expect(user).not.toBeNull();
+		expect(user).not.toBeUndefined();
 		expect(user?.name).toBe('Angel');
 	});
 
@@ -61,10 +62,11 @@ describe('Test UserService', () => {
 		const newUser: User | undefined = await userService.create(createUserDto);
 
 		expect(newUser instanceof User).toBeTruthy();
+		expect(newUser?.password).not.toBe(createUserDto.name);
 		expect(newUser?.name).toBe(createUserDto.name);
 	});
 
-	test('create_conParametrosInvalidos_lanzaExcepcion', async () => {
+	test('create_conEmailExistente_lanzaExcepcion', async () => {
 		const createUserDto: CreateUserDto = {
 			name: 'Pedro',
 			lastName: 'Fernandez',
@@ -86,24 +88,35 @@ describe('Test UserService', () => {
 		const fechaDeHoy: Date = new Date();
 		const updateUserDto: UpdateUserDto = {
 			name: 'Felipe',
-			updatedAt: fechaDeHoy,
 		};
 
-		const user: User | null = await userService.update(id, updateUserDto);
+		const user: User | undefined = await userService.update(id, updateUserDto);
 
 		expect(user).not.toBeNull();
 		expect(user?.name).toBe('Felipe');
 		expect(user?.updatedAt.setHours(0, 0, 0, 0)).toBe(fechaDeHoy.setHours(0, 0, 0, 0));
 	});
 
-	test('update_conParametrosInvalidos_lanzaExcepcion', async () => {
-		const id: string = '8c3e1c21-9bae-4049-8473-2e36578377be';
+	test('update_conIdInexistente_lanzaExcepcion', async () => {
+		const id: string = '9c9e1c91-9bae-4049-8473-2e36578377be';
 		const updateUserDto: UpdateUserDto = {
 			name: 'Felipe',
 		};
 
 		await expect(userService.update(id, updateUserDto)).rejects.toThrow(
 			boom.badRequest(httpCrudUserMessages.errorAlActualizar)
+		);
+	});
+
+	test('update_conIdExistenteYEmailExistente_lanzaExcepcion', async () => {
+		const id: string = '1c3e1c21-9bae-4049-8473-2e36578377be';
+		const updateUserDto: UpdateUserDto = {
+			name: 'Felipe',
+			email: 'ferchu@gmail.com'
+		};
+
+		await expect(userService.update(id, updateUserDto)).rejects.toThrow(
+			boom.badRequest('Key (email)=(ferchu@gmail.com) already exists.')
 		);
 	});
 
@@ -125,7 +138,7 @@ describe('Test UserService', () => {
 	test('findByEmail_conEmailExistente_retornaUser', async () => {
 		const email: string = 'angel@gmail.com';
 
-		const user: User | null = await userService.findByEmail(email);
+		const user: User | undefined = await userService.findByEmail(email);
 
 		expect(user).not.toBeNull();
 		expect(user?.password).toBeDefined();

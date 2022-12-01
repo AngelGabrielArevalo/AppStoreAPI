@@ -37,4 +37,5 @@ export class User extends BaseEntity {
 		default: null,
 	})
 	recoveryToken!: string;
+
 }

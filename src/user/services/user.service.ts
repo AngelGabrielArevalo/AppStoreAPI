@@ -21,7 +21,7 @@ export class UserService extends BaseService<User> {
 		return users;
 	}
 
-	async findById(id: string): Promise<User | null> {
+	async findById(id: string): Promise<User | undefined> {
 		const user: User | null = await this.userRepository.findOneBy({ id });
 		if (!user) {
 			throw boom.notFound(httpCrudUserMessages.noExisteUsuarioConId);
@@ -30,7 +30,7 @@ export class UserService extends BaseService<User> {
 		return user;
 	}
 
-	async findByEmail(email: string): Promise<User | null> {
+	async findByEmail(email: string): Promise<User | undefined> {
 		const user: User | null = await this.userRepository
 			.createQueryBuilder('user')
 			.where({ email })
@@ -60,15 +60,18 @@ export class UserService extends BaseService<User> {
 		}
 	}
 
-	async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
-		updateUserDto.updatedAt = new Date();
-		const result: UpdateResult = await this.userRepository.update(id, updateUserDto);
+	async update(id: string, updateUserDto: UpdateUserDto): Promise<User | undefined> {
+		try {
+			updateUserDto.updatedAt = new Date();
+			const result: UpdateResult = await this.userRepository.update(id, updateUserDto);
+			if (result.affected === 0) {
+				throw boom.badRequest(httpCrudUserMessages.errorAlActualizar);
+			}
 
-		if (result.affected === 0) {
-			throw boom.badRequest(httpCrudUserMessages.errorAlActualizar);
+			return this.findById(id);
+		} catch (error: any) {
+			handleDBEcpection(error);
 		}
-
-		return await this.findById(id);
 	}
 
 	async delete(id: string): Promise<DeleteResult | null> {

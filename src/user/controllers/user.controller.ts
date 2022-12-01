@@ -17,7 +17,7 @@ export class UserController {
 	async findById(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			const { id } = req.params;
-			const user: User | null = await this.userService.findById(id);
+			const user: User | undefined = await this.userService.findById(id);
 
 			res.status(StatusCodes.OK).json(user);
 		} catch (error: any) {
@@ -41,7 +41,7 @@ export class UserController {
 			const { id } = req.params;
 			const updateUserDto: UpdateUserDto = req.body;
 
-			const userUpdate: User | null = await this.userService.update(id, updateUserDto);
+			const userUpdate: User | undefined = await this.userService.update(id, updateUserDto);
 
 			res.status(StatusCodes.OK).json(userUpdate);
 		} catch (error: any) {

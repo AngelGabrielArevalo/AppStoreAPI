@@ -5,10 +5,10 @@ import { User } from '../../user/entities/user.entity';
 @Entity({ name: 'customers' })
 export class Customer extends BaseEntity {
 	@OneToOne(() => User, {
-        nullable: false,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
+		nullable: false,
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
+	})
 	@JoinColumn({ name: 'user_id' })
 	userId!: User;
 
