@@ -4,7 +4,7 @@ import { Customer } from '../entities/customer.entity';
 import boom from '@hapi/boom';
 import { httpCrudCustomerMessages } from '../utils/responses';
 import { CreateCustomerDto } from '../dtos/create-customer.dto';
-import { handleDBEcpection } from '../../common/utils/functions';
+import { errorsDBHandlerException } from '../../common/utils/functions';
 import { UpdateCustomerDto } from '../dtos/update-customer.dto';
 
 export class CustomerService extends BaseService<Customer> {
@@ -39,7 +39,7 @@ export class CustomerService extends BaseService<Customer> {
 
 			return newCustomer;
 		} catch (error: any) {
-			handleDBEcpection(error);
+			errorsDBHandlerException(error);
 		}
 	}
 

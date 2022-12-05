@@ -2,7 +2,7 @@ import { User } from '../../../src/user/entities/user.entity';
 import { UserService } from '../../../src/user/services/user.service';
 import { Rol } from '../../../src/common/types/types';
 import { DeleteResult } from 'typeorm';
-import boom, { Boom } from '@hapi/boom';
+import boom from '@hapi/boom';
 import { httpCrudUserMessages } from '../../../src/user/utils/responses';
 import { getQuery } from '../../configuration/getQuery';
 import { CreateUserDto } from '../../../src/user/dtos/create-user.dto';
@@ -10,6 +10,7 @@ import { UpdateUserDto } from '../../../src/user/dtos/update-user.dto';
 import { ConfigServer } from '../../../src/configuration/configServer';
 
 describe('Test UserService', () => {
+	jest.setTimeout(60000);
 	const userService = new UserService();
 	const configServer = new ConfigServer();
 
@@ -18,9 +19,8 @@ describe('Test UserService', () => {
 		await configServer.synchronizeDB();
 		await configServer.executeQuery(await getQuery());
 	});
-
 	afterEach(async () => {
-		await configServer.dropDBAndDisconect();
+		await configServer.clearDBAndDisconect();
 	});
 
 	test('findAll_conUsersExistentes_retornaArrayDeUsers', async () => {
@@ -51,7 +51,7 @@ describe('Test UserService', () => {
 		const createUserDto: CreateUserDto = {
 			name: 'Pedro',
 			lastName: 'Fernandez',
-			userName: 'pedrito',
+			userName: 'pedritotest',
 			email: '123456@gmail.com',
 			password: '1234',
 			city: 'bsas',
@@ -70,7 +70,7 @@ describe('Test UserService', () => {
 		const createUserDto: CreateUserDto = {
 			name: 'Pedro',
 			lastName: 'Fernandez',
-			userName: 'pedrito',
+			userName: 'pedritotest2',
 			email: 'angel@gmail.com',
 			password: '1234',
 			city: 'bsas',

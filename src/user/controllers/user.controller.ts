@@ -5,6 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { DeleteResult } from 'typeorm';
 import { UpdateUserDto } from '../dtos/update-user.dto';
+
 export class UserController {
 	constructor(private readonly userService: UserService = new UserService()) {}
 

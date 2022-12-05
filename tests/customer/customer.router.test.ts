@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { ServerBoostrap } from '../../src/server/server';
+import { ServerBootstrap } from '../../src/server/server';
 import { NextFunction, Request, Response } from 'express';
 import { CustomerController } from '../../src/customer/controllers/customer.controller';
 import { CustomerMiddleware } from '../../src/customer/middlewares/customer.middlewares';
@@ -31,7 +31,7 @@ jest.spyOn(CustomerMiddleware.prototype, 'validarDto').mockReturnValue(
 );
 
 describe('Tests CustomerRouter', () => {
-	const server = new ServerBoostrap();
+	const server = new ServerBootstrap();
 
 	test('GET:/customers -> llamaACustomerController.findAll', async () => {
 		const mockController = jest

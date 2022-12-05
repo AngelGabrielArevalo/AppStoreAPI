@@ -12,7 +12,7 @@ export class UpdateUserDto {
 	@JoiSchema(['UPDATE'], Joi.string().optional())
 	userName?: string;
 
-	@JoiSchema(['UPDATE'], Joi.string().optional())
+	@JoiSchema(['UPDATE'], Joi.string().email().optional())
 	email?: string;
 
 	@JoiSchema(['UPDATE'], Joi.string().optional())

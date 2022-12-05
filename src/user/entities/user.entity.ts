@@ -10,7 +10,7 @@ export class User extends BaseEntity {
 	@Column()
 	lastName!: string;
 
-	@Column()
+	@Column({ unique: true })
 	userName!: string;
 
 	@Column({
@@ -37,5 +37,4 @@ export class User extends BaseEntity {
 		default: null,
 	})
 	recoveryToken!: string;
-
 }

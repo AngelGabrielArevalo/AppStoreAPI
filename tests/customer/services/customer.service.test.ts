@@ -10,6 +10,7 @@ import boom from '@hapi/boom';
 import { DeleteResult } from 'typeorm';
 
 describe('Test CustomerService', () => {
+	jest.setTimeout(60000);
 	const customerService = new CustomerService();
 	const configServer = new ConfigServer();
 
@@ -18,9 +19,8 @@ describe('Test CustomerService', () => {
 		await configServer.synchronizeDB();
 		await configServer.executeQuery(await getQuery());
 	});
-
 	afterEach(async () => {
-		await configServer.dropDBAndDisconect();
+		await configServer.clearDBAndDisconect();
 	});
 
 	test('findAll_conCustomersExistentes_retornaArrayDeCustomers', async () => {
@@ -112,7 +112,7 @@ describe('Test CustomerService', () => {
 		};
 
 		await expect(customerService.update(id, updateCustomerDto)).rejects.toThrow(
-			boom.badRequest(httpCrudCustomerMessages.errorAlActualizar)
+			httpCrudCustomerMessages.errorAlActualizar
 		);
 	});
 
@@ -128,8 +128,7 @@ describe('Test CustomerService', () => {
 		const id: string = '9c9e9c21-9bae-4049-8473-2e36578377be';
 
 		await expect(customerService.delete(id)).rejects.toThrow(
-			boom.unauthorized(httpCrudCustomerMessages.errorAlEliminar)
+			httpCrudCustomerMessages.errorAlEliminar
 		);
 	});
 });
-

@@ -11,6 +11,7 @@ import { UpdateCustomerDto } from '../../../src/customer/dtos/update-customer.dt
 import { DeleteResult } from 'typeorm';
 
 jest.mock('../../../src/customer/services/customer.service.ts');
+
 describe('Test CustomerController', () => {
 	const customerController: CustomerController = new CustomerController();
 

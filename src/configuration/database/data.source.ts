@@ -17,6 +17,6 @@ const Config: DataSourceOptions = {
 	migrationsRun: true,
 	logging: false,
 	namingStrategy: new SnakeNamingStrategy(),
+	poolSize: 50,
 };
-
 export const AppDataSource: DataSource = new DataSource(Config);

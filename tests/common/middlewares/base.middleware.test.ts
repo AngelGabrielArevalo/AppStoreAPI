@@ -47,7 +47,8 @@ describe('Tests BaseMiddlewares', () => {
 		const req: Request = getMockReq({ body: createUserDto });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
-		const mockError = [
+		let mockErrorBoom = boom.badRequest('"province" is required');
+		mockErrorBoom.output.payload.mostInfo = [
 			{
 				message: '"province" is required',
 				path: ['province'],
@@ -64,7 +65,7 @@ describe('Tests BaseMiddlewares', () => {
 		middlwware(req, res, next);
 
 		expect(next).toHaveBeenCalledTimes(1);
-		expect(next).toBeCalledWith(boom.badRequest(JSON.stringify(mockError)));
+		expect(next).toBeCalledWith(mockErrorBoom);
 	});
 
 	test('validarUUID_conIdValido_llamaANext', () => {

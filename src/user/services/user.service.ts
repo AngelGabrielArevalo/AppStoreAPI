@@ -5,7 +5,7 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import boom from '@hapi/boom';
 import { httpCrudUserMessages } from '../utils/responses';
-import { handleDBEcpection } from '../../common/utils/functions';
+import { errorsDBHandlerException } from '../../common/utils/functions';
 import bcrypt from 'bcrypt';
 
 export class UserService extends BaseService<User> {
@@ -56,7 +56,7 @@ export class UserService extends BaseService<User> {
 			delete user.password;
 			return user;
 		} catch (error: any) {
-			handleDBEcpection(error);
+			errorsDBHandlerException(error);
 		}
 	}
 
@@ -70,7 +70,7 @@ export class UserService extends BaseService<User> {
 
 			return this.findById(id);
 		} catch (error: any) {
-			handleDBEcpection(error);
+			errorsDBHandlerException(error);
 		}
 	}
 

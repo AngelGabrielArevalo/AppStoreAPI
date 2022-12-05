@@ -19,8 +19,9 @@ export class BaseMiddleware {
 			if (!error) {
 				return next();
 			}
-
-			next(boom.badRequest(JSON.stringify(error.details)));
+			const errorBoom = boom.badRequest(error.message);
+			errorBoom.output.payload.mostInfo = error.details;
+			next(errorBoom);
 		};
 	}
 

@@ -1,4 +1,3 @@
-import { ConfigServer } from '../../configuration/configServer';
 import { BaseEntity } from '../entities/base.entity';
 import { EntityTarget, Repository } from 'typeorm';
 import { AppDataSource } from '../../configuration/database/data.source';

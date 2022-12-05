@@ -18,6 +18,6 @@ export class Customer extends BaseEntity {
 	@Column('varchar', { length: 10 })
 	phone!: string;
 
-	@Column('varchar', { length: 10 })
+	@Column('varchar', { unique: true, length: 10 })
 	dni!: string;
 }

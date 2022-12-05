@@ -12,7 +12,7 @@ export class CreateUserDto {
 	@JoiSchema(['CREATE'], Joi.string().required())
 	userName!: string;
 
-	@JoiSchema(['CREATE'], Joi.string().required())
+	@JoiSchema(['CREATE'], Joi.string().email().required())
 	email!: string;
 
 	@JoiSchema(['CREATE'], Joi.string().required())
