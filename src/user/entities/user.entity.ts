@@ -35,6 +35,7 @@ export class User extends BaseEntity {
 	@Column({
 		nullable: true,
 		default: null,
+		select: false
 	})
 	recoveryToken!: string;
 }

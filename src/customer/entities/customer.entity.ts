@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
 import { User } from '../../user/entities/user.entity';
+import { Order } from '../../order/entities/order.entity';
 
 @Entity({ name: 'customers' })
 export class Customer extends BaseEntity {
@@ -20,4 +21,7 @@ export class Customer extends BaseEntity {
 
 	@Column('varchar', { unique: true, length: 10 })
 	dni!: string;
+
+	@OneToMany(() => Order, order => order.customerId)
+	orders?: Order[];
 }

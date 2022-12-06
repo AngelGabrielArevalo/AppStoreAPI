@@ -7,6 +7,10 @@ import cors from 'cors';
 import { ErrorHandlerMiddleware } from '../common/middlewares/errorHandler.middleware';
 import { CustomerRouter } from '../customer/customer.router';
 import { CategoryRouter } from '../category/category.router';
+import { ProductRouter } from '../product/product.router';
+import { OrderRouter } from '../order/order.router';
+import { OrderProductRouter } from '../order-product/order-product.router';
+import { seedRouter } from '../seed/seedControllers';
 
 export class ServerBootstrap extends ConfigServer {
 	public app: Application;
@@ -27,7 +31,15 @@ export class ServerBootstrap extends ConfigServer {
 	}
 
 	routers(): Array<Router> {
-		return [new UserRouter().router, new CustomerRouter().router, new CategoryRouter().router];
+		return [
+			new UserRouter().router,
+			new CustomerRouter().router,
+			new CategoryRouter().router,
+			new ProductRouter().router,
+			new OrderRouter().router,
+			new OrderProductRouter().router,
+			seedRouter
+		];
 	}
 
 	async dbConnect(): Promise<void> {

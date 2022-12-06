@@ -9,7 +9,7 @@
     "start": "set NODE_ENV=production && node src/app.ts",
     "test": "jest --runInBand",
     "build": "npx tsc -p tsconfig.json",
-    "test-coverage": "jest --coverage",
+    "test-coverage": "jest --runInBand --coverage",
     "lint": "eslint . --ext .ts --fix",
     "prettier": "npx prettier --write **/*.js **/*.ts **/*.json **/*.yaml",
     "prettier-check": "prettier --check **/*.js **/*.ts **/*.json **/*.yaml",

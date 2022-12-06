@@ -1,13 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import request from 'supertest';
-import { UserController } from '../../src/user/controllers/user.controller';
+import { OrderController } from '../../src/order/controllers/order.controller';
 import { ServerBootstrap } from '../../src/server/server';
-import { UserMiddleware } from '../../src/user/middlewares/user.middleware';
-import { LocationRequest, SchemaDto } from '../../src/common/types/types';
-import { Constructor } from 'joi-class-decorators/internal/defs';
-import { BaseMiddleware } from '../../src/common/middlewares/base.middleware';
+import { OrderMiddleware } from '../../src/order/middlewares/order.middleware';
 
-jest.mock('../../src/user/controllers/user.controller');
+jest.mock('../../src/order/controllers/order.controller');
 jest.mock('morgan', () => {
 	return () => {
 		return (req: Request, res: Response, next: NextFunction) => {
@@ -22,79 +19,79 @@ jest.mock('cors', () => {
 		};
 	};
 });
-jest.spyOn(UserMiddleware.prototype, 'validateUUID').mockImplementation(
+jest.spyOn(OrderMiddleware.prototype, 'validateUUID').mockImplementation(
 	(req: Request, res: Response, next: NextFunction) => {
 		next();
 	}
 );
-jest.spyOn(UserMiddleware.prototype, 'validarDto').mockReturnValue(
+jest.spyOn(OrderMiddleware.prototype, 'validarDto').mockReturnValue(
 	(req: Request, res: Response, next: NextFunction) => {
 		next();
 	}
 );
-describe('Test UserRouter', () => {
+describe('Test OrderRouter', () => {
 	const server = new ServerBootstrap();
 
-	test('GET:/users_llamaAuserController.findAll', async () => {
+	test('GET:/orders -> llamaAOrderController.findAll', async () => {
 		const mockController = jest
-			.spyOn(UserController.prototype, 'findAll')
+			.spyOn(OrderController.prototype, 'findAll')
 			.mockImplementation(async (req: Request, res: Response, next: NextFunction) => {
 				res.send('Mock controller');
 			});
-			
-		const response = await request(server.app).get('/api/v1/users');
+
+		const response = await request(server.app).get('/api/v1/orders');
 
 		expect(mockController).toHaveBeenCalledTimes(1);
 		expect(response.text).toBe('Mock controller');
 	});
 
-	test('GET:/users/:id_llamaAuserController.findById', async () => {
+	test('GET:/orders/:id -> llamaAOrderController.findById', async () => {
 		const mockController = jest
-			.spyOn(UserController.prototype, 'findById')
+			.spyOn(OrderController.prototype, 'findById')
 			.mockImplementation(async (req: Request, res: Response, next: NextFunction) => {
 				res.send('Mock controller');
 			});
 
-		const response = await request(server.app).get('/api/v1/users/:123');
+		const response = await request(server.app).get('/api/v1/orders/1234');
 
 		expect(mockController).toHaveBeenCalledTimes(1);
 		expect(response.text).toBe('Mock controller');
 	});
 
-	test('POST:/users/_llamaAuserController.create', async () => {
+	test('POST:/orders -> llamaAOrderController.create', async () => {
 		const mockController = jest
-			.spyOn(UserController.prototype, 'create')
+			.spyOn(OrderController.prototype, 'create')
 			.mockImplementation(async (req: Request, res: Response, next: NextFunction) => {
 				res.send('Mock controller');
 			});
 
-		const response = await request(server.app).post('/api/v1/users');
+		const response = await request(server.app).post('/api/v1/orders');
 
 		expect(mockController).toHaveBeenCalledTimes(1);
 		expect(response.text).toBe('Mock controller');
 	});
 
-	test('UPDATE:/users/:id/_llamaAuserController.update', async () => {
+	test('PATCH:/orders/:id -> llamaAOrderController.update', async () => {
 		const mockController = jest
-			.spyOn(UserController.prototype, 'update')
+			.spyOn(OrderController.prototype, 'update')
 			.mockImplementation(async (req: Request, res: Response, next: NextFunction) => {
 				res.send('Mock controller');
 			});
 
-		const response = await request(server.app).patch('/api/v1/users/:123');
+		const response = await request(server.app).patch('/api/v1/orders/123');
 
 		expect(mockController).toHaveBeenCalledTimes(1);
 		expect(response.text).toBe('Mock controller');
 	});
 
-	test('DELETE:/users/:id/_llamaAuserController.delete', async () => {
+	test('DELETE:/orders/:id -> llamaAOrderController.delete', async () => {
 		const mockController = jest
-			.spyOn(UserController.prototype, 'delete')
+			.spyOn(OrderController.prototype, 'delete')
 			.mockImplementation(async (req: Request, res: Response, next: NextFunction) => {
 				res.send('Mock controller');
 			});
 
-		const response = await request(server.app).delete('/api/v1/users/:123');
+		const response = await request(server.app).delete('/api/v1/orders/123');
 
 		expect(mockController).toHaveBeenCalledTimes(1);
 		expect(response.text).toBe('Mock controller');

@@ -1,73 +1,72 @@
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import { NextFunction, Request, Response } from 'express';
-import { CategoryController } from '../../../src/category/controllers/category.controller';
-import { Category } from '../../../src/category/entities/category.entity';
-import { CategoryService } from '../../../src/category/services/category.service';
+import { OrderController } from '../../../src/order/controllers/order.controller';
+import { Order } from '../../../src/order/entities/order.entity';
+import { OrderService } from '../../../src/order/services/order.service';
 import { StatusCodes } from 'http-status-codes';
-import { CreateCategoryDto } from '../../../src/category/dtos/create-category.dto';
-import { UpdateCategoryDto } from '../../../src/category/dtos/update-category.dto';
+import { CreateOrderDto } from '../../../src/order/dtos/create-order.dto';
+import { UpdateOrderDto } from '../../../src/order/dtos/update-order.dto';
 import { DeleteResult } from 'typeorm';
+import { Category } from '../../../src/category/entities/category.entity';
+import { Customer } from '../../../src/customer/entities/customer.entity';
 
-describe('Tests CategoryController', () => {
-	const categoryController: CategoryController = new CategoryController();
+describe('Tests OrderController', () => {
+	const orderController: OrderController = new OrderController();
 
-	test('findAll_conCategoriesExistentes_respondeJSONConCategoriesYStatus200', async () => {
+	test('findAll_conOrdersExistentes_respondeJSONConOrdersYStatus200', async () => {
 		const req: Request = getMockReq();
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
-		const mockCategories: Category[] = [
+		const mockOrders: Order[] = [
 			{
-				id: '5c3e1c21-9bae-4049-8473-2e36578377be',
+				id: '5c4e1c21-9bae-4049-8473-2e36578377be',
 				createdAt: new Date('2022-11-23T00:48:14.555Z'),
 				updatedAt: new Date('2022-11-23T00:48:14.555Z'),
-				name: 'vehiculos',
-				image: 'https://static.vecteezy.com/system/resources/previews/002/031/689/non_2x/blue-sedan-car-vehicle-transportation-icon-vector.jpg',
+				customerId: '2c3e1c21-9bae-4049-8473-2e36578377be' as unknown as Customer,
 			},
 			{
-				id: '6c3e1c21-9bae-4049-8473-2e36578377be',
+				id: '3c3e1c21-9bae-4049-8473-2e36578377be',
 				createdAt: new Date('2022-11-23T00:48:14.555Z'),
 				updatedAt: new Date('2022-11-23T00:48:14.555Z'),
-				name: 'supermercado',
-				image: 'https://thumbs.dreamstime.com/b/items-del-supermercado-28832872.jpg',
+				customerId: '2c3e1c21-9bae-4049-8473-2e36578377be' as unknown as Customer,
 			},
 		];
 		const mockService = jest
-			.spyOn(CategoryService.prototype, 'findAll')
-			.mockResolvedValue(mockCategories);
+			.spyOn(OrderService.prototype, 'findAll')
+			.mockResolvedValue(mockOrders);
 
-		await categoryController.findAll(req, res, next);
+		await orderController.findAll(req, res, next);
 
 		expect(mockService).toHaveBeenCalledTimes(1);
 		expect(res.status).toHaveBeenCalledTimes(1);
 		expect(res.status).toHaveBeenCalledWith(StatusCodes.OK);
 		expect(res.json).toHaveBeenCalledTimes(1);
-		expect(res.json).toHaveBeenCalledWith(mockCategories);
+		expect(res.json).toHaveBeenCalledWith(mockOrders);
 	});
 
-	test('findById_conIdExistente_respondeJSONConCategoryYStatus200', async () => {
+	test('findById_conIdExistente_respondeJSONConOrderYStatus200', async () => {
 		const id: string = '5c3e1c21-9bae-4049-8473-2e36578377be';
 		const req: Request = getMockReq({ params: { id: id } });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
-		const mockCategory: Category = {
-			id: '5c3e1c21-9bae-4049-8473-2e36578377be',
+		const mockOrder: Order = {
+			id: '5c4e1c21-9bae-4049-8473-2e36578377be',
 			createdAt: new Date('2022-11-23T00:48:14.555Z'),
 			updatedAt: new Date('2022-11-23T00:48:14.555Z'),
-			name: 'vehiculos',
-			image: 'https://static.vecteezy.com/system/resources/previews/002/031/689/non_2x/blue-sedan-car-vehicle-transportation-icon-vector.jpg',
+			customerId: '2c3e1c21-9bae-4049-8473-2e36578377be' as unknown as Customer,
 		};
 		const mockService = jest
-			.spyOn(CategoryService.prototype, 'findById')
-			.mockResolvedValue(mockCategory);
+			.spyOn(OrderService.prototype, 'findById')
+			.mockResolvedValue(mockOrder);
 
-		await categoryController.findById(req, res, next);
+		await orderController.findById(req, res, next);
 
 		expect(mockService).toHaveBeenCalledTimes(1);
 		expect(mockService).toBeCalledWith(id);
 		expect(res.status).toHaveBeenCalledTimes(1);
 		expect(res.status).toHaveBeenCalledWith(StatusCodes.OK);
 		expect(res.json).toHaveBeenCalledTimes(1);
-		expect(res.json).toHaveBeenCalledWith(mockCategory);
+		expect(res.json).toHaveBeenCalledWith(mockOrder);
 	});
 
 	test('findById_conIdInexistente_llamaANext', async () => {
@@ -76,123 +75,119 @@ describe('Tests CategoryController', () => {
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
 		const mockService = jest
-			.spyOn(CategoryService.prototype, 'findById')
+			.spyOn(OrderService.prototype, 'findById')
 			.mockImplementation(() => {
 				throw new Error();
 			});
 
-		await categoryController.findById(req, res, next);
+		await orderController.findById(req, res, next);
 
 		expect(next).toHaveBeenCalledTimes(1);
 	});
 
-	test('create_conParametrosValidos_respondeJSONConCategoryYStatus201', async () => {
-		const createCategoryDto: CreateCategoryDto = {
-			name: 'Lacteos',
-			image: 'http://localhost',
+	test('create_conParametrosValidos_respondeJSONConOrderYStatus201', async () => {
+		const createOrderDto: CreateOrderDto = {
+			customerId: '8c8e8c88-9bae-4049-8473-8e38888387be' as unknown as Customer,
 		};
-		const req: Request = getMockReq({ body: createCategoryDto });
+		const req: Request = getMockReq({ body: createOrderDto });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
-		const mockNewCategory: Category = {
-			id: '5c3e1c21-9bae-4049-8473-2e36578377be',
+		const mockNewOrder: Order = {
+			id: '5c4e1c21-9bae-4049-8473-2e36578377be',
 			createdAt: new Date('2022-11-23T00:48:14.555Z'),
 			updatedAt: new Date('2022-11-23T00:48:14.555Z'),
-			name: 'Lacteos',
-			image: 'http://localhost',
+			customerId: '8c8e8c88-9bae-4049-8473-8e38888387be' as unknown as Customer,
 		};
 		const mockService = jest
-			.spyOn(CategoryService.prototype, 'create')
-			.mockResolvedValue(mockNewCategory);
+			.spyOn(OrderService.prototype, 'create')
+			.mockResolvedValue(mockNewOrder);
 
-		await categoryController.create(req, res, next);
+		await orderController.create(req, res, next);
 
 		expect(mockService).toHaveBeenCalledTimes(1);
-		expect(mockService).toBeCalledWith(createCategoryDto);
+		expect(mockService).toBeCalledWith(createOrderDto);
 		expect(res.status).toHaveBeenCalledTimes(1);
 		expect(res.status).toHaveBeenCalledWith(StatusCodes.CREATED);
 		expect(res.json).toHaveBeenCalledTimes(1);
-		expect(res.json).toHaveBeenCalledWith(mockNewCategory);
+		expect(res.json).toHaveBeenCalledWith(mockNewOrder);
 	});
 
 	test('create_conParametrosInvalidos_llamaANext', async () => {
-		const createCategoryDto: CreateCategoryDto = {
-			name: 'vehiculos',
-			image: 'http://localhost',
+		const createOrderDto: CreateOrderDto = {
+			customerId: 'ID INEXISTENTE' as unknown as Customer,
 		};
-		const req: Request = getMockReq({ body: createCategoryDto });
+		const req: Request = getMockReq({ body: createOrderDto });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
 		const mockService = jest
-			.spyOn(CategoryService.prototype, 'create')
+			.spyOn(OrderService.prototype, 'create')
 			.mockImplementation(() => {
 				throw new Error();
 			});
 
-		await categoryController.create(req, res, next);
+		await orderController.create(req, res, next);
 
 		expect(next).toHaveBeenCalledTimes(1);
 	});
 
-	test('update_conParametrosValidos_respondeJSONConCategoryYStatus200', async () => {
-		const id: string = '5c3e1c21-9bae-4049-8473-2e36578377be';
-		const createCategoryDto: UpdateCategoryDto = {
-			image: 'http://localhost',
+	test('update_conParametrosValidos_respondeJSONConOrderYStatus200', async () => {
+		const id: string = '5c4e1c21-9bae-4049-8473-2e36578377be';
+		const updateOrderDto: UpdateOrderDto = {
+			customerId: '2c3e1c21-9bae-4049-8473-2e36578377be' as unknown as Customer,
 		};
-		const req: Request = getMockReq({ params: { id: id }, body: createCategoryDto });
+		const req: Request = getMockReq({ params: { id: id }, body: updateOrderDto });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
-		const mockCategoryUpdated: Category = {
-			id: '5c3e1c21-9bae-4049-8473-2e36578377be',
+		const mockOrderUpdated: Order = {
+			id: '5c4e1c21-9bae-4049-8473-2e36578377be',
 			createdAt: new Date('2022-11-23T00:48:14.555Z'),
 			updatedAt: new Date('2022-11-23T00:48:14.555Z'),
-			name: 'vehiculos',
-			image: 'http://localhost',
+			customerId: '2c3e1c21-9bae-4049-8473-2e36578377be' as unknown as Customer,
 		};
 		const mockService = jest
-			.spyOn(CategoryService.prototype, 'update')
-			.mockResolvedValue(mockCategoryUpdated);
+			.spyOn(OrderService.prototype, 'update')
+			.mockResolvedValue(mockOrderUpdated);
 
-		await categoryController.update(req, res, next);
+		await orderController.update(req, res, next);
 
 		expect(mockService).toHaveBeenCalledTimes(1);
-		expect(mockService).toBeCalledWith(id, createCategoryDto);
+		expect(mockService).toBeCalledWith(id, updateOrderDto);
 		expect(res.status).toHaveBeenCalledTimes(1);
 		expect(res.status).toHaveBeenCalledWith(StatusCodes.OK);
 		expect(res.json).toHaveBeenCalledTimes(1);
-		expect(res.json).toHaveBeenCalledWith(mockCategoryUpdated);
+		expect(res.json).toHaveBeenCalledWith(mockOrderUpdated);
 	});
 
 	test('update_conParametrosInvalidos_llamaANext', async () => {
 		const id: string = '5c3e1c21-9bae-4049-8473-2e36578377be';
-		const updateCategoryDto: UpdateCategoryDto = {
-			name: 'NOMBRE EXISTENTE',
+		const updateOrderDto: UpdateOrderDto = {
+			customerId: 'ID INEXISTENTE' as unknown as Customer,
 		};
-		const req: Request = getMockReq({ params: { id: id }, body: updateCategoryDto });
+		const req: Request = getMockReq({ params: { id: id }, body: updateOrderDto });
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
 		const mockService = jest
-			.spyOn(CategoryService.prototype, 'update')
+			.spyOn(OrderService.prototype, 'update')
 			.mockImplementation(() => {
 				throw new Error();
 			});
 
-		await categoryController.update(req, res, next);
+		await orderController.update(req, res, next);
 
 		expect(next).toHaveBeenCalledTimes(1);
 	});
 
-    test('delete_conParametrosValidos_respondeJSONConDeleteResultYAffectEn1YStatus200', async () => {
+	test('delete_conParametrosValidos_respondeJSONConDeleteResultYAffectEn1YStatus200', async () => {
 		const id: string = '5c3e1c21-9bae-4049-8473-2e36578377be';
 		const req: Request = getMockReq({ params: { id: id }});
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
 		const mockDeleteResult: DeleteResult = { raw: [], affected: 1 };
 		const mockService = jest
-			.spyOn(CategoryService.prototype, 'delete')
+			.spyOn(OrderService.prototype, 'delete')
 			.mockResolvedValue(mockDeleteResult);
 
-		await categoryController.delete(req, res, next);
+		await orderController.delete(req, res, next);
 
 		expect(mockService).toHaveBeenCalledTimes(1);
 		expect(mockService).toBeCalledWith(id);
@@ -208,12 +203,12 @@ describe('Tests CategoryController', () => {
 		const res: Response = getMockRes().res;
 		const next: NextFunction = getMockRes().next;
 		const mockService = jest
-			.spyOn(CategoryService.prototype, 'delete')
+			.spyOn(OrderService.prototype, 'delete')
 			.mockImplementation(() => {
 				throw new Error();
 			});
 
-		await categoryController.delete(req, res, next);
+		await orderController.delete(req, res, next);
 
 		expect(next).toHaveBeenCalledTimes(1);
 	});
